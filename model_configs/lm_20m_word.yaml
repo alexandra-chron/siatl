@@ -1,0 +1,23 @@
+name: "lm20m_70K"
+checkpoint_interval: 100000
+log_interval: 10
+batch_size: 32
+epochs: 30
+weight_decay: 0.0
+data:
+  train_path: twitter20M/train.txt
+  val_path: twitter20M/valid.txt
+  seq_len: 0
+vocab:
+  size: 70000
+model:
+  emb_size: 400
+  embed_noise: 0.1
+  embed_dropout: 0.3
+  rnn_size: 1000
+  rnn_layers: 2
+  rnn_dropout: 0.3
+  decode: True
+  tie_weights: True
+  pack: True
+  clip: 5
