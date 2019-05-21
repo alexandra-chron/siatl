@@ -1,0 +1,39 @@
+name: "scv2_aux_ft_gu"
+pretrained_lm: "lm20m_70K"
+checkpoint_interval: 0
+log_interval: 20
+unfreeze_rnn: 2
+unfreeze_embed: 5
+batch_size: 32
+exp_decay: [-1.6, -2.3]
+top_lr: 0.0005
+epochs: 100
+preprocessor: None
+patience: 10
+weight_decay: 0.0
+data:
+  dataset: scv2
+  seq_len: 80
+vocab:
+  size: 70000
+model:
+  emb_size: 400
+  embed_noise: 0.01
+  embed_dropout: 0.1
+  dropout: 0.1
+  dropouth: 0.1
+  dropouti: 0.1
+  dropoute: 0.2
+  bottom_rnn_size: 1000
+  bottom_rnn_layers: 2
+  bottom_rnn_dropout: 0.4
+  top_rnn_size: 100
+  top_rnn_layers: 1
+  top_rnn_dropout: 0.3
+  top_rnn_bidir: False
+  tie_weights: False
+  pack: False
+  clip: 1
+  attention_dropout: 0.3
+  attention_layers: 1
+  has_att: False

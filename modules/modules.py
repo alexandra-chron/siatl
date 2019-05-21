@@ -205,8 +205,7 @@ class RNNModule(nn.Module, RecurrentHelper):
             out_packed, hidden = self.rnn(packed, hidden)
 
             out_unpacked, _lengths = pad_packed_sequence(out_packed,
-                                                         batch_first=True,
-                                                         total_length=max_length)
+                                                         batch_first=True)
 
             ###############################################
             # un-sorting

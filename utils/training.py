@@ -1,44 +1,10 @@
 import datetime
-import numpy
 import os
 
 import torch
-from sklearn.utils import compute_class_weight
+from sklearn.metrics import accuracy_score, f1_score
 
 from sys_config import BASE_DIR
-
-
-def get_class_labels(y):
-    """
-    Get the class labels
-    :param y: list of labels, ex. ['positive', 'negative', 'positive',
-                                    'neutral', 'positive', ...]
-    :return: sorted unique class labels
-    """
-    return numpy.unique(y)
-
-
-def get_class_weights(y):
-    """
-    Returns the normalized weights for each class
-    based on the frequencies of the samples
-    :param y: list of true labels (the labels must be hashable)
-    :return: dictionary with the weight for each class
-    """
-
-    weights = compute_class_weight('balanced', numpy.unique(y), y)
-
-    d = {c: w for c, w in zip(numpy.unique(y), weights)}
-
-    return d
-
-
-def class_weigths(targets, to_pytorch=False):
-    w = get_class_weights(targets)
-    labels = get_class_labels(targets)
-    if to_pytorch:
-        return torch.cuda.FloatTensor([w[l] for l in sorted(labels)])
-    return labels
 
 
 def save_checkpoint(state, name, path=None, timestamp=False, tag=None,
@@ -71,7 +37,7 @@ def save_checkpoint(state, name, path=None, timestamp=False, tag=None,
     name += ".pt"
 
     if path is None:
-        path = os.path.join(BASE_DIR, "checkpoints/clean")
+        path = os.path.join(BASE_DIR, "checkpoints")
 
     file = os.path.join(path, name)
 
@@ -107,3 +73,12 @@ def load_checkpoint(name, path=None, device=None):
     print("done!")
 
     return state
+
+
+def acc(y, y_hat):
+    return accuracy_score(y, y_hat)
+
+
+def f1_macro(y, y_hat):
+    return f1_score(y, y_hat, average='macro')
+

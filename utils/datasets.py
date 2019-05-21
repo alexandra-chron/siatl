@@ -105,6 +105,7 @@ class ClfCollate:
     def pad_collate(self, batch):
         # inputs = pad_sequence([torch.FloatTensor(x[0]) for x in batch],
         #                       self.batch_first)
+        batch = sorted(batch, key=lambda x: x[2], reverse=True)
         inputs = pad_sequence([torch.LongTensor(x[0]) for x in batch],
                               self.batch_first)
         labels = torch.LongTensor([x[1] for x in batch])
@@ -231,9 +232,7 @@ class LMDataset(Dataset):
             input (str, list): the path to the data file, or a list of samples.
             attributes (numpy.ndarray): list of attributes
                 shape: samples x n_attributes
-            seq_len (int): sequence length -
-                if stateful==True: refers to size of backpropagation through time.
-                the dataset will be split to small sequences of bptt size.
+            seq_len (int): sequence length
             vocab (Vocab): a vocab instance. If None, then build a new one
                 from the Datasets data.
             vocab_size(int): if given, then trim the vocab to the given number.

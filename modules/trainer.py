@@ -1,6 +1,6 @@
 import time
 
-import numpy
+import numpy as np
 import torch
 from torch.nn.utils import clip_grad_norm_
 
@@ -51,11 +51,11 @@ class Trainer:
         self.epoch = 0
         self.step = 0
         self.progress_log = None
-
-        if isinstance(self.train_loader, (tuple, list)):
-            self.train_set_size = len(self.train_loader[0].dataset)
-        else:
-            self.train_set_size = len(self.train_loader.dataset)
+        if self.train_loader:
+            if isinstance(self.train_loader, (tuple, list)):
+                self.train_set_size = len(self.train_loader[0].dataset)
+            else:
+                self.train_set_size = len(self.train_loader.dataset)
 
         if isinstance(self.valid_loader, (tuple, list)):
             self.val_set_size = len(self.valid_loader[0].dataset)
@@ -71,8 +71,8 @@ class Trainer:
         return seq
 
     def _anneal(self, param):
-        # return numpy.geomspace(param[0], param[1], num=5).tolist()
-        return numpy.linspace(param[0], param[1], num=10).tolist()
+        x = np.linspace(param[0], param[1], num=15)
+        return np.exp(x).tolist()
 
     def _seq_loss(self, logits, labels):
         loss = self.criterion(logits.contiguous().view(-1, logits.size(-1)),
@@ -167,7 +167,7 @@ class Trainer:
                 if callable(c):
                     c(i_batch, loss_list)
 
-        return numpy.array(losses).mean(axis=0)
+        return np.array(losses).mean(axis=0)
 
     def eval_epoch(self):
         """
@@ -202,13 +202,10 @@ class Trainer:
                 loss, _losses = self.aggregate_losses(batch_losses)
                 losses.append(_losses)
 
-        return numpy.array(losses).mean(axis=0)
+        return np.array(losses).mean(axis=0)
 
     def get_state(self):
-        if self.train_loader.dataset.subword:
-            _vocab = self.train_loader.dataset.subword_path
-        else:
-            _vocab = self.train_loader.dataset.vocab
+        _vocab = self.train_loader.dataset.vocab
 
         state = {
             "config": self.config,

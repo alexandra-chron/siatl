@@ -14,9 +14,7 @@ signal.signal(signal.SIGINT, lambda s, f: sys.exit(0))
 def train_options(def_config):
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', default=def_config)
-    parser.add_argument('--name')
-    parser.add_argument('--desc')
-    parser.add_argument('--resume')
+    parser.add_argument('-c', default="checkpoint")
 
     parser.add_argument('--device', default="auto")
     parser.add_argument('--cores', type=int, default=4)
@@ -25,12 +23,6 @@ def train_options(def_config):
 
     args = parser.parse_args()
     config = load_config(os.path.join(MODEL_CNF_DIR, args.config))
-
-    if args.name is None:
-        args.name = os.path.splitext(args.config)[0]
-
-    # config["name"] = args.name
-    config["desc"] = args.desc
 
     if args.device == "auto":
         args.device = torch.device("cuda" if torch.cuda.is_available()

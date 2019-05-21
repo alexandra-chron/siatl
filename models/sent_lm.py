@@ -13,7 +13,6 @@ from modules.modules import LangModel
 from sys_config import EXP_DIR
 from utils.datasets import LMDataset, LMCollate, BucketBatchSampler, \
     SortedSampler
-from utils.training import load_checkpoint
 
 ####################################################################
 # SETTINGS
@@ -29,11 +28,6 @@ vocab = None
 opts.name = config["name"]
 preprocessor = None
 
-if opts.resume:
-    checkpoint = load_checkpoint(opts.resume)
-    config["vocab"].update(checkpoint["config"]["vocab"])
-    if not config["vocab"]["subword"]:
-        vocab = checkpoint["vocab"]
 
 print("Building training dataset...")
 train_set = LMDataset(config["data"]["train_path"], preprocess=preprocessor,
@@ -100,16 +94,6 @@ exp.add_metric("ep_loss", "line", "epoch loss", ["TRAIN", "VAL"])
 exp.add_metric("ep_ppl", "line", "epoch perplexity", ["TRAIN", "VAL"])
 exp.add_value("progress", title="training progress")
 exp.add_value("epoch", title="epoch summary")
-
-####################################################################
-# Resume Training from a previous checkpoint
-####################################################################
-if opts.resume:
-    print("Resuming training ...")
-    model.load_state_dict(checkpoint["model"])
-    optimizer.load_state_dict(checkpoint["optimizers"][0])
-    trainer.epoch = checkpoint["epoch"]
-    trainer.step = checkpoint["step"]
 
 ####################################################################
 # Training Loop
