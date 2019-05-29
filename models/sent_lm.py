@@ -19,14 +19,8 @@ from utils.datasets import LMDataset, LMCollate, BucketBatchSampler, \
 ####################################################################
 # SETTINGS
 ####################################################################
-parser = argparse.ArgumentParser()
-parser.add_argument("-i", "--input", required=False,
-                    default='lm_20m_word.yaml',
-                    help="config file of input data")
-args = parser.parse_args()
-input_config = args.input
 
-opts, config = train_options(input_config)
+opts, config = train_options('lm_20m_word.yaml')
 
 from logger.experiment import Experiment
 ####################################################################

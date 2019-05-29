@@ -78,9 +78,9 @@ The yaml config files can be found under ```model_configs/``` directory.
 #### Train a Language Model:
 
 Assuming you have placed the training and validation data under ```datasets/<name_of_your_corpus/train.txt``` and 
-```datasets/<name_of_your_corpus/valid.txt``` (check the ```model_configs/lm_20m_word.yaml```'s data section), you can train a LM. See for example:
+```datasets/<name_of_your_corpus/valid.txt``` (check the ```model_configs/lm_20m_word.yaml```'s data section), you can train a LM:
 
-``` python models/sent_lm.py -i lm_20m_word.yaml ```
+``` python models/sent_lm.py ```
 
 #### Fine-tune the Language Model on the labeled dataset, using an auxiliary LM loss, 2 optimizers and sequential unfreezing, as described in the paper:
 
