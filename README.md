@@ -8,7 +8,7 @@ The modules used to pretrain the LM and fine-tune it to 5 downstream classificat
 # Introduction
 
 This paper presents present a simple transfer learning approach that addresses the problem of catastrophic forgetting.
-We pretrain a language model and then transfer it to a new model, to which we add a recurrent layer and an attention mechanism. Based on multi-task learning, we use a weighted sum of losses and fine-tune the pretrained model on our (classification) task.
+We pretrain a language model and then transfer it to a new model, to which we add a recurrent layer and an attention mechanism. Based on multi-task learning, we use a weighted sum of losses (language model loss and classification loss) and fine-tune the pretrained model on our (classification) task.
 
 # Architecture
 <!-- <img src="https://github.com/alexandra-chron/siatl/tree/master/images/siatl.png" width="380"> -->
