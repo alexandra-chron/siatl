@@ -11,9 +11,12 @@ This paper presents present a simple transfer learning approach that addresses t
 We pretrain a language model and then transfer it to a new model, to which we add a recurrent layer and an attention mechanism. Based on multi-task learning, we use a weighted sum of losses (language model loss and classification loss) and fine-tune the pretrained model on our (classification) task.
 
 # Architecture
-<!-- <img src="https://github.com/alexandra-chron/siatl/tree/master/images/siatl.png" width="380"> -->
 
+<p align="center">
+<img src="https://user-images.githubusercontent.com/30402550/58558299-19d26680-8229-11e9-893d-99d25c911c7a.png" width="450">
+</p>
 
+ 
 **Step 1**: Pretraining of a word-level LSTM-based language model 
 
 **Step 2**: Fine-tuning the language model (LM) on a classification task. Use of an auxiliary LM loss, 2 different optimizers (1 for the pretrained part and 1 for the newly added part), sequentially unfreezing method.
