@@ -3,7 +3,6 @@ This repository contains source code for NAACL 2019 paper "An Embarrassingly Sim
 Pretrained Language Models" [(Paper link)](https://arxiv.org/abs/1902.10547)
 
  
-The modules used to pretrain the LM and fine-tune it to 5 downstream classification tasks will be added shortly.
 
 # Introduction
 
