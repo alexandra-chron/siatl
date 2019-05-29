@@ -1,6 +1,8 @@
 import math
 import os
 import sys
+
+import argparse
 from torch import nn, optim
 from torch.utils.data import DataLoader
 
@@ -17,7 +19,14 @@ from utils.datasets import LMDataset, LMCollate, BucketBatchSampler, \
 ####################################################################
 # SETTINGS
 ####################################################################
-opts, config = train_options("lm_20m_word.yaml")
+parser = argparse.ArgumentParser()
+parser.add_argument("-i", "--input", required=False,
+                    default='lm_20m_word.yaml',
+                    help="config file of input data")
+args = parser.parse_args()
+input_config = args.input
+
+opts, config = train_options(input_config)
 
 from logger.experiment import Experiment
 ####################################################################
