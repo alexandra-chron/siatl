@@ -40,7 +40,7 @@ We pretrain a language model and then transfer it to a new model, to which we ad
 
 #### Dependencies
 
-- PyTorch version >=1.0.0
+- PyTorch version >=0.4.0
 
 - Python version >= 3.6
 
@@ -52,9 +52,9 @@ conda create -n siatl python=3
 conda activate siatl
 ```
 
-Install PyTorch ```1.1.0``` with the desired cuda version to use the GPU:
+Install PyTorch ```0.4.0``` with the desired cuda version to use the GPU:
 
-``` conda install pytorch torchvision -c pytorch```
+``` conda install pytorch==0.4.0 torchvision -c pytorch```
 
 Then install the rest of the requirements:
 
