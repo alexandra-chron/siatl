@@ -117,12 +117,6 @@ class ClfTrainer(Trainer):
             for c in self.batch_end_callbacks:
                 if callable(c):
                     c(i_batch, loss_list)
-        try:
-            print("\n Value of weight factor is {} \n".format(
-                self.lm_coef[self.coef_step]))
-        except:
-            print("\n Value of weight factor is {} \n".format(
-                self.lm_coef[-1]))
 
         self.coef_step += 1
 

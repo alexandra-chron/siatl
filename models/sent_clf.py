@@ -3,6 +3,12 @@ from itertools import chain
 from torch import nn, optim
 from torch.optim import Adam
 from torch.utils.data import DataLoader
+import sys
+import os
+
+sys.path.insert(0, os.path.join(os.path.dirname(
+    os.path.realpath(__file__)), "../"))
+
 from models.clf_trainer import ClfTrainer
 from modules.modules import Classifier
 from sys_config import EXP_DIR
@@ -173,7 +179,7 @@ def sent_clf(dataset, config, opts, transfer=False):
             best_loss = val_loss[1]
             trainer.best_acc = acc(y, y_pred)
             trainer.best_f1 = f1_macro(y, y_pred)
-            trainer.checkpoint(name=opts.name)
+            trainer.checkpoint(name=opts.name, timestamp=True)
 
         if early_stopping.stop(val_loss[1]):
             print("Early Stopping (according to classification loss)....")
