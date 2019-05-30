@@ -17,7 +17,9 @@ We pretrain a language model and then transfer it to a new model, to which we ad
 </p>
 
  
-**Step 1**: Pretraining of a word-level LSTM-based language model 
+**Step 1**:
+
+- Pretraining of a word-level LSTM-based language model 
 
 **Step 2**: 
 
