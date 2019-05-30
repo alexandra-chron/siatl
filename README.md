@@ -2,6 +2,7 @@
 This repository contains source code for NAACL 2019 paper "An Embarrassingly Simple Approach for Transfer Learning from
 Pretrained Language Models" [(Paper link)](https://arxiv.org/abs/1902.10547)
 
+
  
 
 # Introduction
@@ -18,7 +19,15 @@ We pretrain a language model and then transfer it to a new model, to which we ad
  
 **Step 1**: Pretraining of a word-level LSTM-based language model 
 
-**Step 2**: Fine-tuning the language model (LM) on a classification task. Use of an auxiliary LM loss, 2 different optimizers (1 for the pretrained part and 1 for the newly added part), sequentially unfreezing method.
+**Step 2**: 
+
+- Fine-tuning the language model (LM) on a classification task 
+
+- Use of an auxiliary LM loss
+
+- Employing 2 different optimizers (1 for the pretrained part and 1 for the newly added part)
+
+- Sequentially unfreezing 
 
 
 #### Reference
@@ -47,7 +56,7 @@ We pretrain a language model and then transfer it to a new model, to which we ad
 - Python version >= 3.6
 
 #### Install Requirements 
-** Create Enviornment (Optional): **  Ideally, you should create a conda environment for the project.
+**Create Environment (Optional):**  Ideally, you should create a conda environment for the project.
 
 ```
 conda create -n siatl python=3
