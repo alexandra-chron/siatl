@@ -88,14 +88,30 @@ To make any changes to a model, change an existing or create a new yaml config f
 
 The yaml config files can be found under ```model_configs/``` directory.
 
-#### Train a Language Model:
+#### Use the pretrained Language Model:
 
-Assuming you have placed the training and validation data under ```datasets/<name_of_your_corpus/train.txt``` and 
-```datasets/<name_of_your_corpus/valid.txt``` (check the ```model_configs/lm_20m_word.yaml```'s data section), you can train a LM:
+``` 
+cd checkpoints/
+wget https://www.dropbox.com/s/lalizxf3qs4qd3a/lm20m_70K.pt 
+```
+(Download it and place it in checkpoints/ directory)
 
-``` python models/sent_lm.py ```
+#### (Optional) Train a Language Model:
+
+Assuming you have placed the training and validation data under ```datasets/<name_of_your_corpus/train.txt, 
+datasets/<name_of_your_corpus/valid.txt``` (check the ```model_configs/lm_20m_word.yaml```'s data section), you can train a LM. 
+
+See for example:
+
+``` python models/sent_lm.py -i lm_20m_word.yaml ```
 
 #### Fine-tune the Language Model on the labeled dataset, using an auxiliary LM loss, 2 optimizers and sequential unfreezing, as described in the paper:
 
-``` python models/run_clf.py -i SCV2_aux_ft_gu.yaml ```
+To fine-tune it on the Sarcasm Corpus V2 dataset:
 
+``` python models/run_clf.py -i SCV2_aux_ft_gu.yaml --aux_loss --transfer```
+
+- ``-i``: Configuration yaml file (under ``model_configs/``)
+- ``--aux_loss``: You can choose if you want to use an **auxiliary LM** loss 
+- ``--transfer``: You can choose if you want to use a **pretrained LM** to initalize
+the embedding and hidden layer of your model. If not, they will be randomly initialized

@@ -16,11 +16,17 @@ from sys_config import EXP_DIR
 from utils.datasets import LMDataset, LMCollate, BucketBatchSampler, \
     SortedSampler
 
+parser = argparse.ArgumentParser()
+parser.add_argument("-i", "--input", required=False,
+                    default='lm_20m_word.yaml',
+                    help="config file of language model")
+args = parser.parse_args()
+input_config = args.input
 ####################################################################
 # SETTINGS
 ####################################################################
 
-opts, config = train_options('lm_20m_word.yaml')
+opts, config = train_options(input_config, parser)
 
 from logger.experiment import Experiment
 ####################################################################

@@ -1,0 +1,31 @@
+name: "scv2_naive_gu_att"
+pretrained_lm: "lm20m_70K"
+checkpoint_interval: 0
+log_interval: 20
+unfreeze_rnn: 2
+unfreeze_embed: 5
+batch_size: 64
+gu: True
+top_lr: 0.0001
+epochs: 100
+preprocessor: None
+patience: 6
+weight_decay: 0.0
+data:
+  dataset: scv2
+  seq_len: 80
+vocab:
+  size: 70000
+model:
+  emb_size: 400
+  embed_noise: 0.01
+  embed_dropout: 0.1
+  bottom_rnn_size: 1000
+  bottom_rnn_layers: 2
+  bottom_rnn_dropout: 0.4
+  tie_weights: False
+  pack: True
+  clip: 1
+  attention_dropout: 0.3
+  attention_layers: 1
+  has_att: True

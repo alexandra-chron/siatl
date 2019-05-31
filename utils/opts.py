@@ -11,8 +11,10 @@ from utils.config import load_config
 signal.signal(signal.SIGINT, lambda s, f: sys.exit(0))
 
 
-def train_options(def_config):
-    parser = argparse.ArgumentParser()
+def train_options(def_config, parser=None):
+    if parser is None:
+        parser = argparse.ArgumentParser()
+
     parser.add_argument('--config', default=def_config)
     parser.add_argument('-c', default="checkpoint")
 

@@ -9,12 +9,12 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(
     os.path.realpath(__file__)), "../"))
 
-from models.sent_clf_trainer import SentClfTrainer
-from modules.modules import Classifier
+from models.sent_clf_no_aux_trainer import SentClfNoAuxTrainer
+from utils.early_stopping import EarlyStopping
+from modules.modules import NaiveClassifier
 from sys_config import EXP_DIR
 from utils.datasets import BucketBatchSampler, SortedSampler, ClfDataset, \
     ClfCollate
-from utils.early_stopping import EarlyStopping
 from utils.nlp import twitter_preprocessor
 from utils.training import load_checkpoint, f1_macro, acc
 from utils.transfer import dict_pattern_rename, load_state_dict_subset
@@ -24,7 +24,7 @@ from utils.transfer import dict_pattern_rename, load_state_dict_subset
 ####################################################################
 
 
-def sent_clf(dataset, config, opts, transfer=False):
+def sent_clf_no_aux(dataset, config, opts, transfer=False):
     from logger.experiment import Experiment
 
     opts.name = config["name"]
@@ -40,7 +40,7 @@ def sent_clf(dataset, config, opts, transfer=False):
         vocab = checkpoint["vocab"]
 
     ####################################################################
-    # Load Preprocessed Datasets
+    # Data Loading and Preprocessing
     ####################################################################
     if config["preprocessor"] == "twitter":
         preprocessor = twitter_preprocessor()
@@ -79,55 +79,56 @@ def sent_clf(dataset, config, opts, transfer=False):
     # Model
     ####################################################################
     ntokens = len(train_set.vocab)
-    model = Classifier(ntokens, len(set(train_set.labels)), **config["model"])
+    model = NaiveClassifier(ntokens, len(set(train_set.labels)),
+                            attention=config["model"]["has_att"],
+                            **config["model"])
     model.to(opts.device)
 
-    clf_criterion = nn.CrossEntropyLoss()
-    lm_criterion = nn.CrossEntropyLoss(ignore_index=0)
+    criterion = nn.CrossEntropyLoss()
 
-    embed_parameters = filter(lambda p: p.requires_grad,
-                              model.embed.parameters())
-    bottom_parameters = filter(lambda p: p.requires_grad,
-                               chain(model.bottom_rnn.parameters(),
-                                     model.vocab.parameters()))
-    if config["model"]["has_att"]:
-        top_parameters = filter(lambda p: p.requires_grad,
-                                chain(model.top_rnn.parameters(),
-                                      model.attention.parameters(),
+    if config["gu"]:
+
+        embed_parameters = filter(lambda p: p.requires_grad,
+                                  model.embed.parameters())
+        bottom_parameters = filter(lambda p: p.requires_grad,
+                                   chain(model.bottom_rnn.parameters()))
+        if config["model"]["has_att"]:
+            top_parameters = filter(lambda p: p.requires_grad,
+                                chain(model.attention.parameters(),
                                       model.classes.parameters()))
+        else:
+            top_parameters = filter(lambda p: p.requires_grad,
+                                     model.classes.parameters())
+
+        embed_optimizer = Adam(embed_parameters)
+        rnn_optimizer = Adam(bottom_parameters)
+        top_optimizer = Adam(top_parameters)
+
+        # Trainer: responsible for managing the training process
+        trainer = SentClfNoAuxTrainer(model, train_loader, val_loader,
+                             criterion,
+                             [embed_optimizer,
+                              rnn_optimizer,
+                              top_optimizer],
+                             config, opts.device,
+                             valid_loader_train_set=val_loader_train_dataset,
+                             unfreeze_embed=config["unfreeze_embed"],
+                             unfreeze_rnn=config["unfreeze_rnn"])
     else:
-        top_parameters = filter(lambda p: p.requires_grad,
-                                chain(model.top_rnn.parameters(),
-                                      model.classes.parameters()))
+        parameters = filter(lambda p: p.requires_grad, model.parameters())
 
-    embed_optimizer = optim.ASGD(embed_parameters, lr=0.0001)
-    rnn_optimizer = optim.ASGD(bottom_parameters)
-    top_optimizer = Adam(top_parameters, lr=config["top_lr"])
-    ####################################################################
-    # Training Pipeline
-    ####################################################################
-
-    # Trainer: responsible for managing the training process
-    trainer = SentClfTrainer(model, train_loader, val_loader,
-                         (lm_criterion, clf_criterion),
-                         [embed_optimizer,
-                          rnn_optimizer,
-                          top_optimizer],
-                         config, opts.device,
-                         valid_loader_train_set=val_loader_train_dataset,
-                         unfreeze_embed=config["unfreeze_embed"],
-                         unfreeze_rnn=config["unfreeze_rnn"])
+        optimizer = optim.Adam(parameters, lr=config["top_lr"])
+        # Trainer: responsible for managing the training process
+        trainer = SentClfNoAuxTrainer(model, train_loader, val_loader,
+                                      criterion, [optimizer], config,
+                                      opts.device, valid_loader_train_set=
+                                      val_loader_train_dataset)
 
     ####################################################################
     # Experiment: logging and visualizing the training process
     ####################################################################
-
-    exp = Experiment(opts.name, config, src_dirs=opts.source,
-                     output_dir=EXP_DIR)
-    exp.add_metric("ep_loss_lm", "line", "epoch loss lm",
-                   ["TRAIN", "VAL"])
-    exp.add_metric("ep_loss_cls", "line", "epoch loss class",
-                   ["TRAIN", "VAL"])
+    exp = Experiment(opts.name, config, src_dirs=opts.source, output_dir=EXP_DIR)
+    exp.add_metric("ep_loss", "line", "epoch loss class", ["TRAIN", "VAL"])
     exp.add_metric("ep_f1", "line", "epoch f1", ["TRAIN", "VAL"])
     exp.add_metric("ep_acc", "line", "epoch accuracy", ["TRAIN", "VAL"])
 
@@ -140,8 +141,9 @@ def sent_clf(dataset, config, opts, transfer=False):
     if transfer:
         print("Transferring Encoder weights ...")
         dict_pattern_rename(checkpoint["model"],
-                            {"encoder": "bottom_rnn", "decoder": "vocab"})
+                            {"encoder": "bottom_rnn"})
         load_state_dict_subset(model, checkpoint["model"])
+
     print(model)
 
     ####################################################################
@@ -150,42 +152,38 @@ def sent_clf(dataset, config, opts, transfer=False):
     best_loss = None
     early_stopping = EarlyStopping("min", config["patience"])
 
-    for epoch in range(0, config["epochs"]):
-
+    for epoch in range(1, config["epochs"] + 1):
         train_loss = trainer.train_epoch()
         val_loss, y, y_pred = trainer.eval_epoch(val_set=True)
         _, y_train, y_pred_train = trainer.eval_epoch(train_set=True)
-        exp.update_metric("ep_loss_lm", train_loss[0], "TRAIN")
-        exp.update_metric("ep_loss_lm", val_loss[0], "VAL")
-
-        exp.update_metric("ep_loss_cls", train_loss[1], "TRAIN")
-        exp.update_metric("ep_loss_cls", val_loss[1], "VAL")
-
+        # Calculate accuracy and f1-macro on the evaluation set
+        exp.update_metric("ep_loss", train_loss.item(), "TRAIN")
+        exp.update_metric("ep_loss", val_loss.item(), "VAL")
         exp.update_metric("ep_f1", f1_macro(y_train, y_pred_train),
                           "TRAIN")
         exp.update_metric("ep_f1", f1_macro(y, y_pred), "VAL")
-
         exp.update_metric("ep_acc", acc(y_train, y_pred_train), "TRAIN")
         exp.update_metric("ep_acc", acc(y, y_pred), "VAL")
 
         print()
-        epoch_log = exp.log_metrics(["ep_loss_lm", "ep_loss_cls",
-                                     "ep_f1", "ep_acc"])
+        epoch_log = exp.log_metrics(["ep_loss", "ep_f1", "ep_acc"])
         print(epoch_log)
         exp.update_value("epoch", epoch_log)
 
+        ###############################################################
+        # Unfreezing the model after X epochs
+        ###############################################################
         # Save the model if the val loss is the best we've seen so far.
-        if not best_loss or val_loss[1] < best_loss:
-            best_loss = val_loss[1]
+        if not best_loss or val_loss < best_loss:
+            best_loss = val_loss
             trainer.best_acc = acc(y, y_pred)
             trainer.best_f1 = f1_macro(y, y_pred)
-            trainer.checkpoint(name=opts.name, timestamp=True)
+            trainer.checkpoint(name=opts.name)
 
-        if early_stopping.stop(val_loss[1]):
-            print("Early Stopping (according to classification loss)....")
+        if early_stopping.stop(val_loss):
+            print("Early Stopping (according to cls loss)....")
             break
 
         print("\n" * 2)
-    
-    return best_loss, trainer.best_acc, trainer.best_f1
 
+    return best_loss, trainer.best_acc, trainer.best_f1
