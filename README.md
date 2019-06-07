@@ -1,6 +1,6 @@
 
 This repository contains source code for NAACL 2019 paper "An Embarrassingly Simple Approach for Transfer Learning from
-Pretrained Language Models" [(Paper link)](https://arxiv.org/abs/1902.10547)
+Pretrained Language Models" [(Paper link)](https://www.aclweb.org/anthology/N19-1213)
 
 
  
@@ -35,17 +35,18 @@ We pretrain a language model and then transfer it to a new model, to which we ad
 #### Reference
 
 ```
-@article{DBLP:journals/corr/abs-1902-10547,
-  author    = {Alexandra Chronopoulou and
-               Christos Baziotis and
-               Alexandros Potamianos},
-  title     = {An Embarrassingly Simple Approach for Transfer Learning from Pretrained
-               Language Models},
-  booktitle = {Proceedings of the Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL:HLT)},
-  address   = {Minneapolis, USA},
-  month     = {June},
-  year      = {2019},
-  url       = {http://arxiv.org/abs/1902.10547}
+@inproceedings{chronopoulou-etal-2019-embarrassingly,
+    title = "An Embarrassingly Simple Approach for Transfer Learning from Pretrained Language Models",
+    author = "Chronopoulou, Alexandra  and
+      Baziotis, Christos  and
+      Potamianos, Alexandros",
+    booktitle = "Proceedings of the 2019 Conference of the North {A}merican Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long and Short Papers)",
+    month = jun,
+    year = "2019",
+    address = "Minneapolis, Minnesota",
+    publisher = "Association for Computational Linguistics",
+    url = "https://www.aclweb.org/anthology/N19-1213",
+    pages = "2089--2095",
 }
 ```
 
