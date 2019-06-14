@@ -1,4 +1,11 @@
 import argparse
+
+import sys
+import os
+
+sys.path.insert(0, os.path.join(os.path.dirname(
+    os.path.realpath(__file__)), "../"))
+
 from models.sent_clf import sent_clf
 from models.sent_clf_no_aux import sent_clf_no_aux
 from utils.data_parsing import load_dataset
