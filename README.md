@@ -82,7 +82,9 @@ You can find Sarcasm Corpus V2 [(link)](https://nlds.soe.ucsc.edu/sarcasm2) unde
 
 # Plot visualization
 
-Visdom is used to visualized metrics during training. You should start the server through the command line (using tmux or screen) by typing ```visdom```. Check here for more: https://github.com/facebookresearch/visdom#usage
+Visdom is used to visualized metrics during training. You should start the server through the command line (using tmux or screen) by typing ```visdom```. You will be then able to see the visualizations by going to http://localhost:8097 in your browser.
+
+Check here for more: https://github.com/facebookresearch/visdom#usage
 
 # Training
 
