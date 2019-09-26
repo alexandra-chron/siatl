@@ -80,6 +80,9 @@ pip install -r requirements.txt
 
 You can find Sarcasm Corpus V2 [(link)](https://nlds.soe.ucsc.edu/sarcasm2) under ```datasets/```
 
+# Plot visualization
+
+Visdom is used to visualized metrics during training. You should start the server through the command line (using tmux or screen) by typing ```visdom```. Check here for more: https://github.com/facebookresearch/visdom#usage
 
 # Training
 
