@@ -15,7 +15,7 @@ mkl-random==1.0.2
 nltk==3.4.5
 numpy==1.16.3
 olefile==0.46
-Pillow==6.0.0
+Pillow==6.2.0
 pip==19.1.1
 pycparser==2.19
 pyparsing==2.4.0
