@@ -7,7 +7,7 @@ ekphrasis==0.5.1
 ftfy==5.5.1
 glob2==0.6
 idna==2.8
-joblib==0.13.2
+joblib==1.2.0
 kiwisolver==1.1.0
 matplotlib==3.1.0
 mkl-fft==1.0.12
