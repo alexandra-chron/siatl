@@ -32,7 +32,7 @@ termcolor==1.1.0
 torch==0.4.0
 torchfile==0.1.0
 torchvision==0.2.1
-tornado==6.0.2
+tornado==6.3.3
 tqdm==4.32.1
 ujson==5.4.0
 urllib3==1.26.5
