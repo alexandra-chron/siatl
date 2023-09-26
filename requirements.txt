@@ -29,7 +29,7 @@ setuptools==41.0.1
 six==1.12.0
 tabulate==0.8.3
 termcolor==1.1.0
-torch==0.4.0
+torch==1.13.1
 torchfile==0.1.0
 torchvision==0.2.1
 tornado==6.0.2
